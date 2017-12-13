@@ -4,6 +4,30 @@ var canvas = document.getElementById('viewpoint'),
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight - 210;
 
+function upload()
+{
+
+    var data = canvas.toDataURL();
+    var url = document.getElementById('url');
+    url.style.display="block";
+    var xhr = new XMLHttpRequest();
+
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            url.href = xhr.responseText;
+            url.innerHTML= "Downloaded";
+            console.log("download: "+xhr.responseText);
+        }
+    };
+    xhr.onerror = function () {
+        url.innerHTML = "Error";
+    };
+
+    xhr.open("POST", "download.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.send("img=" + data);
+}
+
 function getQuote() {
   $.ajax({
     url: "https://api.forismatic.com/api/1.0/?",
@@ -17,6 +41,7 @@ function getQuote() {
 
 function make_base(text, author) {
   var base_image = new Image();
+  base_image.crossOrigin = "anonymous";
   base_image.src = 'https://picsum.photos/1920/720/?random&blur=true';
   base_image.onload = function() {
     ctx.drawImage(base_image, 0, 0);
